@@ -11,6 +11,8 @@ $ conda env create -f environment.yml
 ## Example
 
 ```python
+from tqdm import tqdm
+
 n = 1000
 H = np.random.rand(3, 3)
 r = 0.1
