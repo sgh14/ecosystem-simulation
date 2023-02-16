@@ -1,0 +1,6 @@
+name: ecosim
+dependencies:
+  - python
+  - numpy
+  - numba
+  - matplotlib
