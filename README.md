@@ -11,6 +11,7 @@ $ conda env create -f environment.yml
 ## Example
 
 ```python
+import numpy as np
 from tqdm import tqdm
 
 
