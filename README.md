@@ -28,7 +28,7 @@ t = 100000
 
 network = RGG(nodes, coords, r)
 # network = Mesh(nodes, coords)
-ecosystem = Ecosystem(H, delay, network)
+ecosystem = Ecosystem(network, H, delay)
 ecosystem.random_init()
 for _ in tqdm(range(t)):
     ecosystem.evolve()

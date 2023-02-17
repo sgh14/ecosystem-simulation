@@ -3,7 +3,7 @@ from numpy import random as rd
 
 
 class Ecosystem:
-    def __init__(self, H, delay, network):
+    def __init__(self, network, H, delay=0):
         self.time = 0
         self.H = H
         self.delay = delay
@@ -21,9 +21,10 @@ class Ecosystem:
 
 
     def evolve(self):
+        self.time += 1
         new_dead_node = rd.randint(0, self.network.num_nodes)
         self._dead_nodes.append(new_dead_node)
-        if self.time % self.delay == 0 and self.time > 0:
+        if self.time % (self.delay + 1) == 0:
             old_dead_node = self._dead_nodes.pop(0)
             connected_nodes = np.argwhere(self.network.links[old_dead_node]).squeeze()
             competing_nodes = rd.choice(connected_nodes, 2)
@@ -32,5 +33,3 @@ class Ecosystem:
             winner_node = rd.choice(competing_nodes, p=np.array([p, 1 - p]))
             self.network.nodes[old_dead_node] = self.network.nodes[winner_node]
         
-        self.time += 1
-            
