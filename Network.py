@@ -15,12 +15,13 @@ class Mesh(Network):
         n = nodes.shape[0]
         links = np.ones((n, n))
         super().__init__(nodes, coords, links)
-        
+
 
 class RGG(Network):
     def __init__(self, nodes, coords, r):
         distances = self._get_distances(coords)
         links = distances < r
+        np.fill_diagonal(links, False)
         super().__init__(nodes, coords, links)
         self.r = r
 
