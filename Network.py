@@ -10,6 +10,13 @@ class Network:
         self.num_nodes = nodes.shape[0]
 
 
+class Mesh(Network):
+    def __init__(self, nodes, coords):
+        n = nodes.shape[0]
+        links = np.ones((n, n))
+        super().__init__(nodes, coords, links)
+        
+
 class RGG(Network):
     def __init__(self, nodes, coords, r):
         distances = self._get_distances(coords)
@@ -29,10 +36,4 @@ class RGG(Network):
                 distances[i, j] = distances[j, i] = d
 
         return distances
-
-
-class Mesh(Network):
-    def __init__(self, nodes, coords):
-        n = nodes.shape[0]
-        links = np.ones((n, n))
-        super().__init__(nodes, coords, links)
+    
