@@ -1,6 +1,6 @@
 # Ecosystem simulation
 
-Simulation of competitive ecological communities of sessile individuals
+Simulation of competitive ecological communities of sessile individuals based on [[1]](#1).
 
 ## Set up
 
@@ -37,3 +37,7 @@ results = ecosystem.network
 nodes = results.nodes
 coords = results.coords
 ```
+
+## References
+
+<a id="1">[1]</a> Calleja-Solanas, V., Khalil, N., Gómez-Gardeñes, J., Hernández-García, E., & Meloni, S. (2022). Structured interactions as a stabilizing mechanism for competitive ecological communities. Physical Review E, 106(6), 064307; ArXiv:2012.14916.
