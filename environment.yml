@@ -4,3 +4,4 @@ dependencies:
   - numpy
   - numba
   - matplotlib
+  - tqdm
