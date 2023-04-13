@@ -24,7 +24,7 @@ class Ecosystem:
     def _get_neighbours(self, node_index):
         linked_nodes = np.argwhere(self.network.links[node_index] != 0)
         alive_nodes = self.network.nodes[linked_nodes] != 0
-        neighbours = self.network.nodes[linked_nodes[alive_nodes]]
+        neighbours = linked_nodes[alive_nodes]
 
         return neighbours
     
