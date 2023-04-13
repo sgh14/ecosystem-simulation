@@ -12,30 +12,29 @@ $ conda env create -f environment.yml
 
 ```python
 import numpy as np
-from tqdm import tqdm
+from matplotlib import pyplot as plt
 
 from Network import RGG, Mesh
 from Ecosystem import Ecosystem
 
 
-n = 1000
+n = 10000
 nodes = np.zeros(n)
 coords = np.random.rand(n, 2)
 H = np.random.rand(3, 3)
-r = 0.1
-delay = 4
-t = 100000
+r = 0.2
+delay = 0
+t = 10000
 
 network = RGG(nodes, coords, r)
 # network = Mesh(nodes, coords)
 ecosystem = Ecosystem(network, H, delay)
 ecosystem.random_init()
-for _ in tqdm(range(t)):
-    ecosystem.evolve()
+nodes_history = ecosystem.evolve(t)
 
-results = ecosystem.network
-nodes = results.nodes
-coords = results.coords
+counts = np.array([np.sum(nodes_history == i, axis=1) for i in range(H.shape[0]+1)])
+plt.plot(counts.T)
+plt.savefig('evolution.png')
 ```
 
 ## References

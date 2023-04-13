@@ -1,5 +1,6 @@
 import numpy as np
 from numpy import random as rd
+from tqdm import tqdm
 
 
 class Ecosystem:
@@ -23,7 +24,7 @@ class Ecosystem:
     def _get_neighbours(self, node_index):
         linked_nodes = np.argwhere(self.network.links[node_index] != 0)
         alive_nodes = self.network.nodes[linked_nodes] != 0
-        neighbours = self.network.nodes[linked_nodes[alive_nodes]]
+        neighbours = linked_nodes[alive_nodes]
 
         return neighbours
     
@@ -55,9 +56,19 @@ class Ecosystem:
         self.network.nodes[old_dead_node] = self.network.nodes[winner_node]
 
 
-    def evolve(self):
+    def time_step(self):
         self.time += 1
         self._death()
         if self.time % (self.delay + 1) == 0:
             self._reproduction()
-            
+
+
+    def evolve(self, t):
+        shape = (t + 1,) + self.network.nodes.shape
+        nodes_history = np.empty(shape)
+        nodes_history[0] = self.network.nodes
+        for i in tqdm(range(t)):
+            self.time_step()
+            nodes_history[i+1] = self.network.nodes
+
+        return nodes_history
