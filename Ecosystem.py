@@ -39,8 +39,11 @@ class Ecosystem:
 
     
     def _death(self):
-        node_i = rd.randint(0, self.network.num_nodes)
-        neighbours = self._get_neighbours(node_i)
+        neighbours = None
+        while not np.any(neighbours):
+            node_i = rd.randint(0, self.network.num_nodes)
+            neighbours = self._get_neighbours(node_i)
+ 
         node_j = rd.choice(neighbours)
         winner_node = self._competition(node_i, node_j)
         new_dead_node = node_i if node_j == winner_node else node_j
@@ -49,11 +52,16 @@ class Ecosystem:
 
     
     def _reproduction(self):
-        old_dead_node = self._dead_nodes.pop(0)
-        neighbours = self._get_neighbours(old_dead_node)
-        competing_nodes = rd.choice(neighbours, 2)
-        winner_node = self._competition(*competing_nodes)
-        self.network.nodes[old_dead_node] = self.network.nodes[winner_node]
+        try:
+            old_dead_node = self._dead_nodes[0]
+            neighbours = self._get_neighbours(old_dead_node)
+            competing_nodes = rd.choice(neighbours, 2)
+            winner_node = self._competition(*competing_nodes)
+            self.network.nodes[old_dead_node] = self.network.nodes[winner_node]
+            self._dead_nodes.pop(0)
+
+        except:
+            pass
 
 
     def time_step(self):
