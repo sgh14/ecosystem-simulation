@@ -4,13 +4,12 @@ from tqdm import tqdm
 
 
 class Ecosystem:
-    def __init__(self, network, H, delay=0):
+    def __init__(self, network, H, model=0):
         self.time = 0
         self.H = H
-        self.delay = delay
+        self.model = model
         self.network = network
         self.num_species = H.shape[0]
-        self._dead_nodes = []
 
     
     def random_init(self):
@@ -38,45 +37,44 @@ class Ecosystem:
         return winner_node
 
     
-    def _death(self):
-        neighbours = None
-        while not np.any(neighbours):
-            node_i = rd.randint(0, self.network.num_nodes)
-            neighbours = self._get_neighbours(node_i)
- 
-        node_j = rd.choice(neighbours)
-        winner_node = self._competition(node_i, node_j)
-        new_dead_node = node_i if node_j == winner_node else node_j
-        self.network.nodes[new_dead_node] = 0
-        self._dead_nodes.append(new_dead_node)
+    def _death(self, node):
+        self.network.nodes[node] = 0
 
     
-    def _reproduction(self):
+    def _reproduction(self, node):
         try:
-            old_dead_node = self._dead_nodes[0]
-            neighbours = self._get_neighbours(old_dead_node)
+            neighbours = self._get_neighbours(node)
             competing_nodes = rd.choice(neighbours, 2)
             winner_node = self._competition(*competing_nodes)
-            self.network.nodes[old_dead_node] = self.network.nodes[winner_node]
-            self._dead_nodes.pop(0)
-
+            self.network.nodes[node] = self.network.nodes[winner_node]
         except:
             pass
 
 
-    def time_step(self):
+
+    def time_step_A(self):
         self.time += 1
-        self._death()
-        if self.time % (self.delay + 1) == 0:
-            self._reproduction()
+        node = rd.randint(0, self.network.num_nodes)
+        if node != 0:
+            self._death(node)
+        else:
+            self._reproduction(node)
+
+
+    def time_step_B(self):
+        self.time += 1
+        node = rd.randint(0, self.network.num_nodes)
+        self._death(node)
+        self._reproduction(node)
 
 
     def evolve(self, t):
         shape = (t + 1,) + self.network.nodes.shape
         nodes_history = np.empty(shape)
         nodes_history[0] = self.network.nodes
+        time_step = self.time_step_A if self.model == 0 else self.time_step_B
         for i in tqdm(range(t)):
-            self.time_step()
+            time_step()
             nodes_history[i+1] = self.network.nodes
 
         return nodes_history

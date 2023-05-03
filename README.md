@@ -23,12 +23,11 @@ nodes = np.zeros(n)
 coords = np.random.rand(n, 2)
 H = np.random.rand(3, 3)
 r = 0.2
-delay = 0
 t = 10000
 
 network = RGG(nodes, coords, r)
 # network = Mesh(nodes, coords)
-ecosystem = Ecosystem(network, H, delay)
+ecosystem = Ecosystem(network, H, model=1)
 ecosystem.random_init()
 nodes_history = ecosystem.evolve(t)
 
