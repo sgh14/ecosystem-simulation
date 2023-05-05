@@ -14,6 +14,7 @@ class Mesh(Network):
     def __init__(self, nodes, coords):
         n = nodes.shape[0]
         links = np.ones((n, n))
+        np.fill_diagonal(links, 0)
         super().__init__(nodes, coords, links)
 
 

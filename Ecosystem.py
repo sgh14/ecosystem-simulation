@@ -4,10 +4,9 @@ from tqdm import tqdm
 
 
 class Ecosystem:
-    def __init__(self, network, H, model=0):
+    def __init__(self, network, H):
         self.time = 0
         self.H = H
-        self.model = model
         self.network = network
         self.num_species = H.shape[0]
 
@@ -20,8 +19,8 @@ class Ecosystem:
         )
 
     
-    def _get_neighbours(self, node_index):
-        linked_nodes = np.argwhere(self.network.links[node_index] != 0)
+    def _get_neighbours(self, node):
+        linked_nodes = np.argwhere(self.network.links[node] != 0)
         alive_nodes = self.network.nodes[linked_nodes] != 0
         neighbours = linked_nodes[alive_nodes]
 
@@ -51,30 +50,34 @@ class Ecosystem:
             pass
 
 
-
-    def time_step_A(self):
-        self.time += 1
-        node = rd.randint(0, self.network.num_nodes)
-        if node != 0:
-            self._death(node)
-        else:
-            self._reproduction(node)
-
-
-    def time_step_B(self):
-        self.time += 1
-        node = rd.randint(0, self.network.num_nodes)
-        self._death(node)
-        self._reproduction(node)
+    def time_step(self):
+        pass
 
 
     def evolve(self, t):
         shape = (t + 1,) + self.network.nodes.shape
         nodes_history = np.empty(shape)
         nodes_history[0] = self.network.nodes
-        time_step = self.time_step_A if self.model == 0 else self.time_step_B
         for i in tqdm(range(t)):
-            time_step()
+            self.time_step()
             nodes_history[i+1] = self.network.nodes
 
         return nodes_history
+    
+
+class Ecosystem_A(Ecosystem):
+    def time_step(self):
+        self.time += 1
+        node = rd.randint(0, self.network.num_nodes)
+        self._death(node)
+        self._reproduction(node)
+
+
+class Ecosystem_B(Ecosystem):
+    def time_step(self):
+        self.time += 1
+        node = rd.randint(0, self.network.num_nodes)
+        if self.network.nodes[node] != 0:
+            self._death(node)
+        else:
+            self._reproduction(node)
