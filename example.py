@@ -5,7 +5,7 @@ from Network import RGG, Mesh
 from Ecosystem import Ecosystem_A, Ecosystem_B
 
 
-n = 10000
+n = 1000
 nodes = np.zeros(n)
 H = np.array([[0.50, 0.34, 0.76],
               [0.66, 0.50, 0.25],
