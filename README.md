@@ -15,8 +15,12 @@ $ python example.py
 ```
 
 <p align="center">
-<img title="model_A" src="images/evolution_A.png" width=49%>
-<img title="model_B" src="images/evolution_B.png" width=49%>
+<img title="model_A" src="images/evolution_A_short.png" width=49%>
+<img title="model_B" src="images/evolution_B_short.png" width=49%>
+</p>
+<p align="center">
+<img title="model_A" src="images/evolution_A_long.png" width=49%>
+<img title="model_B" src="images/evolution_B_long.png" width=49%>
 </p>
 
 ## References
