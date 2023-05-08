@@ -4,31 +4,20 @@ import numpy as np
 import os
 import imageio
 
-
-def create_gif(ecosystem, nodes_hist, output_path, step=100, plot_links=True):
+def create_gif(ecosystem, nodes_hist, output_path, step=100):
     coords = ecosystem.network.coords
-    links = ecosystem.network.links
     output_root, output_extension = os.path.splitext(output_path)
     filenames = []
-    tmax, num_nodes = nodes_hist.shape
-    for t in range(0, tmax, step):
-        alive_nodes_ids = np.argwhere(nodes_hist[t]).squeeze()
-        alive_coords = coords[alive_nodes_ids]
-        alive_nodes = nodes_hist[t][alive_nodes_ids]
+    for t in range(0, nodes_hist.shape[0], step):
+        alive_nodes = np.argwhere(nodes_hist[t]).squeeze()
+        alive_coords = coords[alive_nodes]
+        colors = plt.cm.Set1(nodes_hist[t][alive_nodes])
         fig, ax = plt.subplots()
         ax.set_title(f'$t={t}$')
-        ax.set_aspect('equal')
-        if plot_links:
-            lines = []
-            for i in range(num_nodes):
-                for j in range(i):
-                    if (i in alive_nodes) and (j in alive_nodes):
-                        lines.append([coords[i], coords[j]])
-
-            lc = mc.LineCollection(lines, linewidths=1)
-            ax.add_collection(lc)
-            
-        ax.scatter(alive_coords[:, 0], alive_coords[:, 1], c=alive_nodes, s=10)
+        ax.set_aspect('equal')            
+        ax.scatter(alive_coords[:, 0], alive_coords[:, 1], c=colors, s=10)
+        ax.set_xlabel('$x$')
+        ax.set_ylabel('$y$')
         filename = output_root + f'_{t}_' + '.png'
         filenames.append(filename)
         fig.savefig(filename)
@@ -45,11 +34,12 @@ def create_gif(ecosystem, nodes_hist, output_path, step=100, plot_links=True):
 
 def plot_abundances(ecosystem, nodes_hist, title, output_path):
     n = ecosystem.network.num_nodes
-    counts = np.array(
-        [np.sum(nodes_hist == i, axis=1) for i in range(ecosystem.num_species+1)]
-    )
     fig, ax = plt.subplots()
-    ax.plot(counts.T/n)
+    for i in range(ecosystem.num_species + 1):
+        abundance = np.sum(nodes_hist == i, axis=1)/n
+        color = plt.cm.Set1(i)
+        ax.plot(abundance, c=color)
+
     ax.set_xlabel('$t$')
     ax.set_ylabel('Relative abundance')
     ax.set_title(title)
