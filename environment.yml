@@ -4,3 +4,6 @@ dependencies:
   - numpy
   - numba
   - matplotlib
+  - tqdm
+  - pip:
+    - imageio

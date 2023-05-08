@@ -10,13 +10,13 @@ class Network:
         self.num_nodes = nodes.shape[0]
 
 
-class RGG(Network):
+class Interaction_Network(Network):
     def __init__(self, nodes, coords, r):
         distances = self._get_distances(coords)
-        links = distances < r
+        links = self._get_links(distances, r)
         super().__init__(nodes, coords, links)
         self.r = r
-
+    
 
     @staticmethod
     @njit
@@ -29,10 +29,40 @@ class RGG(Network):
                 distances[i, j] = distances[j, i] = d
 
         return distances
+    
+
+    @staticmethod
+    def _get_links(distances, r):
+        links = distances < r
+        np.fill_diagonal(links, False)
+
+        return links
 
 
-class Mesh(Network):
-    def __init__(self, nodes, coords):
+class Mesh(Interaction_Network):
+    def __init__(self, nodes, r):
         n = nodes.shape[0]
-        links = np.ones((n, n))
-        super().__init__(nodes, coords, links)
+        coords = self._get_coords(n)
+        super().__init__(nodes, coords, r)
+
+    
+    @staticmethod
+    def _get_coords(n):
+        x = y = np.linspace(0, 1, np.ceil(np.sqrt(n)).astype(np.int32))
+        X, Y = np.meshgrid(x, y)
+        coords = np.stack([X.flat, Y.flat], axis=1)[:n]
+
+        return coords
+
+
+class RGG(Interaction_Network):
+    def __init__(self, nodes, r):
+        n = nodes.shape[0]
+        coords = self._get_coords(n)
+        super().__init__(nodes, coords, r)
+    
+    @staticmethod
+    def _get_coords(n):
+        coords = np.random.rand(n, 2)
+
+        return coords
