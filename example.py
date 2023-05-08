@@ -24,5 +24,5 @@ for distance, r in r_vals.items():
         nodes_hist = ecosystem.evolve(t)
         title = 'model ' + model + ' - ' + distance + f' range ($r={r}$)'
         output_path = path.join('images', 'evolution_' + model + '_' + distance)
-        create_gif(ecosystem, nodes_hist, output_path + '.gif', step=1000)
+        create_gif(ecosystem, nodes_hist, output_path + '.gif', step=500)
         plot_abundances(ecosystem, nodes_hist, title, output_path + '.png')
