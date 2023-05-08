@@ -56,7 +56,7 @@ class Ecosystem:
 
     def evolve(self, t):
         shape = (t + 1,) + self.network.nodes.shape
-        nodes_history = np.empty(shape)
+        nodes_history = np.empty(shape, dtype=np.int32)
         nodes_history[0] = self.network.nodes
         for i in tqdm(range(t)):
             self.time_step()

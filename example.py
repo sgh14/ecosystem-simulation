@@ -1,8 +1,9 @@
 import numpy as np
-from matplotlib import pyplot as plt
+from os import path
 
 from Network import RGG, Mesh
 from Ecosystem import Ecosystem_A, Ecosystem_B
+from plot_results import plot_abundances, create_gif
 
 
 n = 1000
@@ -11,7 +12,7 @@ H = np.array([[0.50, 0.34, 0.76],
               [0.66, 0.50, 0.25],
               [0.24, 0.75, 0.50]])
 r_vals = {'short': 0.03, 'long': 0.15}
-t = 30000
+t = 10000
 
 for distance, r in r_vals.items():
     network = RGG(nodes, r) # Mesh(nodes, r)
@@ -21,12 +22,7 @@ for distance, r in r_vals.items():
     for model, ecosystem in ecosystems.items():
         ecosystem.random_init()
         nodes_hist = ecosystem.evolve(t)
-        counts = np.array(
-            [np.sum(nodes_hist == i, axis=1) for i in range(ecosystem.num_species+1)]
-        )
-        fig, ax = plt.subplots()
-        ax.plot(counts.T/n)
-        ax.set_xlabel('$t$')
-        ax.set_ylabel('Relative abundance')
-        ax.set_title('model ' + model + ' - ' + distance + f' range ($r={r}$)')
-        fig.savefig('images/evolution_' + model + '_' + distance + '.png')
+        title = 'model ' + model + ' - ' + distance + f' range ($r={r}$)'
+        output_path = path.join('images', 'evolution_' + model + '_' + distance)
+        create_gif(ecosystem, nodes_hist, output_path + '.gif', step=500)
+        plot_abundances(ecosystem, nodes_hist, title, output_path + '.png')

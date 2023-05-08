@@ -13,14 +13,28 @@ $ conda env create -f environment.yml
 ```
 $ python example.py
 ```
+### Short range
 
 <p align="center">
 <img title="model_A" src="images/evolution_A_short.png" width=49%>
 <img title="model_B" src="images/evolution_B_short.png" width=49%>
 </p>
 <p align="center">
+<img title="model_A" src="images/evolution_A_short.gif" width=49%>
+<img title="model_B" src="images/evolution_B_short.gif" width=49%>
+</p>
+
+### Long range
+
+<p align="center">
 <img title="model_A" src="images/evolution_A_long.png" width=49%>
 <img title="model_B" src="images/evolution_B_long.png" width=49%>
+</p>
+</p>
+<p align="center">
+<img title="model_A" src="images/evolution_A_long.gif" width=49%>
+<img title="model_B" src="images/evolution_B_long.gif" width=49%>
+</p>
 </p>
 
 ## References
