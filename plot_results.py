@@ -4,14 +4,16 @@ import numpy as np
 import os
 import imageio
 
-def create_gif(ecosystem, nodes_hist, output_path, step=100):
+def create_gif(ecosystem, nodes_hist, output_path, step=5000):
     coords = ecosystem.network.coords
     output_root, output_extension = os.path.splitext(output_path)
     filenames = []
     for t in range(0, nodes_hist.shape[0], step):
         alive_nodes = np.argwhere(nodes_hist[t]).squeeze()
         alive_coords = coords[alive_nodes]
-        colors = plt.cm.Set1(nodes_hist[t][alive_nodes])
+        colors = [(1, 1, 1), 'b', 'r', 'y']
+        my_cmap = ListedColormap(colors)
+        colors = my_cmap(nodes_hist[t][alive_nodes])
         fig, ax = plt.subplots()
         ax.set_title(f'$t={t}$')
         ax.set_aspect('equal')            
@@ -23,13 +25,14 @@ def create_gif(ecosystem, nodes_hist, output_path, step=100):
         fig.savefig(filename)
         plt.close()
 
-    with imageio.get_writer(output_path, mode='I', duration=250) as writer:
+    with imageio.get_writer(output_path, mode='I', duration=50) as writer:
         for filename in filenames:
             image = imageio.imread(filename)
             writer.append_data(image)
 
     for filename in set(filenames):
         os.remove(filename)
+
 
 
 def plot_abundances(ecosystem, nodes_hist, title, output_path):
