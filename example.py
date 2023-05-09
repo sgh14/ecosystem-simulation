@@ -12,7 +12,7 @@ H = np.array([[0.50, 0.34, 0.76],
               [0.66, 0.50, 0.25],
               [0.24, 0.75, 0.50]])
 r_vals = {'short': 0.03, 'long': 0.15}
-t = 10000
+t = n*100
 
 for distance, r in r_vals.items():
     network = RGG(nodes, r) # Mesh(nodes, r)
@@ -24,5 +24,5 @@ for distance, r in r_vals.items():
         nodes_hist = ecosystem.evolve(t)
         title = 'model ' + model + ' - ' + distance + f' range ($r={r}$)'
         output_path = path.join('images', 'evolution_' + model + '_' + distance)
-        create_gif(ecosystem, nodes_hist, output_path + '.gif', step=500)
+        create_gif(ecosystem, nodes_hist, output_path + '.gif', step=5000)
         plot_abundances(ecosystem, nodes_hist, title, output_path + '.png')
