@@ -1,8 +1,8 @@
 from matplotlib import pyplot as plt
-from matplotlib import collections as mc
 import numpy as np
 import os
 import imageio
+
 
 def create_gif(ecosystem, nodes_hist, output_path, step=1000):
     coords = ecosystem.network.coords
