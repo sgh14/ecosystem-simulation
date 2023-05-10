@@ -1,3 +1,4 @@
+import h5py
 import numpy as np
 from numpy import random as rd
 from tqdm import tqdm
@@ -54,15 +55,13 @@ class Ecosystem:
         pass
 
 
-    def evolve(self, t):
-        shape = (t + 1,) + self.network.nodes.shape
-        nodes_history = np.empty(shape, dtype=np.int32)
-        nodes_history[0] = self.network.nodes
-        for i in tqdm(range(t)):
-            self.time_step()
-            nodes_history[i+1] = self.network.nodes
-
-        return nodes_history
+    def evolve(self, t, output_path='nodes_hist.h5'):
+        with h5py.File(output_path, 'w') as output_file:
+            n = self.network.num_nodes
+            dataset = output_file.create_dataset('nodes_hist', shape=(t, n))
+            for t in tqdm(range(t)):
+                self.time_step()
+                dataset[t, :] = self.network.nodes
     
 
 class Ecosystem_A(Ecosystem):
