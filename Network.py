@@ -1,68 +1,82 @@
+import h5py
 import numpy as np
-from numba import njit
+from numpy import random as rd
+from tqdm import tqdm
 
 
-class Network:
-    def __init__(self, nodes, coords, links):
-        self.nodes = nodes
-        self.coords = coords
-        self.links = links
-        self.num_nodes = nodes.shape[0]
-
-
-class Interaction_Network(Network):
-    def __init__(self, nodes, coords, r):
-        distances = self._get_distances(coords)
-        links = self._get_links(distances, r)
-        super().__init__(nodes, coords, links)
-        self.r = r
-    
-
-    @staticmethod
-    @njit
-    def _get_distances(coords):
-        num_nodes = coords.shape[0]
-        distances = np.zeros((num_nodes, num_nodes))
-        for i in range(num_nodes):
-            for j in range(i):
-                d = np.sqrt(np.sum((coords[i] - coords[j])**2))
-                distances[i, j] = distances[j, i] = d
-
-        return distances
-    
-
-    @staticmethod
-    def _get_links(distances, r):
-        links = distances < r
-        np.fill_diagonal(links, False)
-
-        return links
-
-
-class Mesh(Interaction_Network):
-    def __init__(self, nodes, r):
-        n = nodes.shape[0]
-        coords = self._get_coords(n)
-        super().__init__(nodes, coords, r)
+class Ecosystem:
+    def __init__(self, network, H):
+        self.time = 0
+        self.H = H
+        self.network = network
+        self.num_species = H.shape[0]
 
     
-    @staticmethod
-    def _get_coords(n):
-        x = y = np.linspace(0, 1, np.ceil(np.sqrt(n)).astype(np.int32))
-        X, Y = np.meshgrid(x, y)
-        coords = np.stack([X.flat, Y.flat], axis=1)[:n]
+    def random_init(self):
+        self.network.nodes = rd.randint(
+            low=1, 
+            high=self.num_species + 1,
+            size=self.network.num_nodes
+        )
 
-        return coords
-
-
-class RGG(Interaction_Network):
-    def __init__(self, nodes, r):
-        n = nodes.shape[0]
-        coords = self._get_coords(n)
-        super().__init__(nodes, coords, r)
     
-    @staticmethod
-    def _get_coords(n):
-        coords = np.random.rand(n, 2)
+    def _get_neighbours(self, node):
+        linked_nodes = np.argwhere(self.network.links[node] != 0)
+        alive_nodes = self.network.nodes[linked_nodes] != 0
+        neighbours = linked_nodes[alive_nodes]
 
-        return coords
+        return neighbours
+    
+    
+    def _competition(self, node_i, node_j):
+        competing_nodes = np.array([node_i, node_j])
+        competing_nodes_classes = self.network.nodes[competing_nodes]
+        p = self.H[tuple(competing_nodes_classes - 1)]
+        winner_node = rd.choice(competing_nodes, p=np.array([p, 1 - p]))
+
+        return winner_node
+
+    
+    def _death(self, node):
+        self.network.nodes[node] = 0
+
+    
+    def _reproduction(self, node):
+        try:
+            neighbours = self._get_neighbours(node)
+            competing_nodes = rd.choice(neighbours, 2)
+            winner_node = self._competition(*competing_nodes)
+            self.network.nodes[node] = self.network.nodes[winner_node]
+        except:
+            pass
+
+
+    def time_step(self):
+        pass
+
+
+    def evolve(self, t, output_path='nodes_hist.h5'):
+        with h5py.File(output_path, 'w') as output_file:
+            n = self.network.num_nodes
+            dataset = output_file.create_dataset('nodes_hist', shape=(t, n))
+            for t in tqdm(range(t)):
+                self.time_step()
+                dataset[t, :] = self.network.nodes
+    
+
+class Ecosystem_A(Ecosystem):
+    def time_step(self):
+        self.time += 1
+        node = rd.randint(0, self.network.num_nodes)
+        self._death(node)
+        self._reproduction(node)
+
+
+class Ecosystem_B(Ecosystem):
+    def time_step(self):
+        self.time += 1
+        node = rd.randint(0, self.network.num_nodes)
+        if self.network.nodes[node] != 0:
+            self._death(node)
+        else:
+            self._reproduction(node)
